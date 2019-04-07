@@ -124,6 +124,7 @@ public class PIServer extends Thread {
                 tree.execute(root, dataOutputStream);
                 break;
             case CD:
+                System.out.println("CD");
                 CommandsWork moveTo = commandsFactory.getCommand(Commands.MOVETO);
                 moveTo.execute(root, dataOutputStream);
                 break;
