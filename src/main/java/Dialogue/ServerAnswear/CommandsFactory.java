@@ -25,16 +25,13 @@ public class CommandsFactory {
             case DOWNLOAD:
                 toReturn = new FileDownload();
                 break;
-            case SAVE:
+            case UPLOAD:
                 toReturn = new FileUpload();
                 break;
             case DELETE:
                 toReturn = new FileDelete();
                 break;
             case STOP:
-                Stop stop = ()->{
-
-                };
                 break;
         }
         return toReturn;

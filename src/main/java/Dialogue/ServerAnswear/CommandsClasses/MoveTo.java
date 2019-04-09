@@ -3,9 +3,7 @@ package Dialogue.ServerAnswear.CommandsClasses;
 import Dialogue.Root;
 import Dialogue.ServerAnswear.CommandsWork;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 public class MoveTo implements CommandsWork {
     @Override

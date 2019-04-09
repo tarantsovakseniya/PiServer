@@ -7,7 +7,7 @@ public enum Commands {
     MOVETO,
     BACKTO,
     DOWNLOAD,
-    SAVE,
+    UPLOAD,
     DELETE,
     STOP;
 

@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="7e61005f-56c0-48f1-97bd-1a8dee26c0af" name="pi" url="http://95.67.105.74">
-        <fileTransfer host="95.67.105.74" port="36005" rootFolder="/home/pi" accessType="SFTP">
+        <fileTransfer host="95.67.105.74" port="36005" rootFolder="/home/pi/" accessType="SFTP">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

@@ -8,14 +8,16 @@ public class Root {
     private final String tail;
     private String fromClient;
 
-    public Root() {
-        root = "D:\\TemplatePI";
+    public Root(String root) {
+        this.root = root;
         tail = "$";
         PATH = root;
     }
 
     public void setPATH(String PATH) {
-        this.PATH = PATH;
+        if (PATH.startsWith(root)) {
+            this.PATH = PATH;
+        } else this.PATH = root;
     }
 
     public String getFromClient() {
@@ -39,11 +41,9 @@ public class Root {
     }
 
     public void checkRootFromData(ClientRequest.Request request, String data) {
-            setFromClient(request.getP().matcher(data).replaceFirst(""));
-            if (getFromClient().startsWith("D:")) {
-                setFromClient(getFromClient());
-            } else {
-                setFromClient(getPATH() + "\\" + getFromClient());
-            }
+        setFromClient(request.getP().matcher(data).replaceFirst(""));
+        if (getFromClient().startsWith(root)) setFromClient(getFromClient());
+        if (getFromClient().equals("home")) setFromClient(getRoot());
+        else setFromClient(getPATH() + "\\" + getFromClient());
     }
 }

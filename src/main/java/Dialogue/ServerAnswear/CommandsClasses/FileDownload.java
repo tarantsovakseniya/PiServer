@@ -4,7 +4,6 @@ import Dialogue.Root;
 import Dialogue.ServerAnswear.CommandsWork;
 
 import java.io.*;
-import java.util.concurrent.TimeUnit;
 
 public class FileDownload implements CommandsWork {
 
@@ -12,14 +11,19 @@ public class FileDownload implements CommandsWork {
     public void execute(Root root, DataOutputStream dataOutputStream) {
         try {
             File file = new File(root.getFromClient());
+            System.out.println(root.getFromClient());
             if (file.exists()) {
-                dataOutputStream.write((int)file.length());
+                System.out.println("file exist "+ file.getName());
+                System.out.println((int)file.length());
+                dataOutputStream.writeInt((int)file.length());
+//                dataOutputStream.flush();
                 byte[] bytes = new byte[(int) file.length()];
                 BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file.getPath()));
                 bis.read(bytes, 0, bytes.length);
-                bis.close();
                 dataOutputStream.write(bytes, 0, bytes.length);
-                dataOutputStream.writeUTF(root.getPATH()+root.getTail());
+//                dataOutputStream.flush();
+                dataOutputStream.writeUTF("File was downloaded." + "\n"+ root.getPATH()+root.getTail());
+                bis.close();
                 dataOutputStream.flush();
             }
         } catch (IOException e) {

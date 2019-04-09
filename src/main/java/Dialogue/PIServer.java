@@ -31,15 +31,20 @@ public class PIServer extends Thread {
         this.stop = stop;
     }
 
+    public void setRoot(Root root) {
+        this.root = root;
+    }
+
     @Override
     public void run() {
         while (alive) {
             System.out.println("Connection was started...");
             try {
                 final Socket socket = serverSocket.accept();
-                root = new Root();
                 commandsFactory = new CommandsFactory();
+                System.out.println("Waiting for client...");
                 Thread thread = new Thread(() -> {
+                    System.out.println("Client connected...");
                     try (DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                          DataInputStream dataInputStream = new DataInputStream(socket.getInputStream())) {
                         dataOutputStream.writeUTF(root.getRoot() + root.getTail());
@@ -48,15 +53,8 @@ public class PIServer extends Thread {
                             try {
                                 String data = "";
                                 data = dataInputStream.readUTF();
-                                System.out.println("Data " + data);
-                                getData(data, dataOutputStream, () -> {
-                                    dataOutputStream.close();
-                                    dataInputStream.close();
-                                    socket.close();
-                                });
-                                if (data.equals("end") || data.equals("stop")) {
-                                    break;
-                                }
+                                if (data.equals("end") || data.equals("stop")) break;
+                                getData(data, dataOutputStream, dataInputStream, () -> socket.close());
                             } catch (SocketException exception) {
                                 exception.getMessage();
                             }
@@ -69,84 +67,76 @@ public class PIServer extends Thread {
                         }
                         e.printStackTrace();
                     }
-//                    while (true) {
-//                        try {
-//                            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-//                            dataOutputStream.writeUTF(root.getRoot() + root.getTail());
-//                            dataOutputStream.flush();
-//                            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-//                            while (true) {
-//                                String data = "";
-//                                data = dataInputStream.readUTF();
-//                                System.out.println("Data " + data);
-//                                getData(data, dataOutputStream, () -> {
-//                                    dataInputStream.close();
-//                                    dataOutputStream.close();
-//                                    socket.close();
-//                                });
-//                                if (data.equals("end") || data.equals("stop")) {
-//                                    break;
-//                                }
-//                            }
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
+                    System.out.println("Client disconnected.");
                 });
                 thread.setDaemon(true);
                 thread.start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            System.out.println("Connection completed.");
         }
         System.out.println("Finish");
     }
 
-    private void getData(String data, DataOutputStream dataOutputStream, Stop stop) throws IOException {
-        if (data == null) return;
-        ClientRequest.Request request = RequestSearch.getRequest(data);
-        if (request == null) return;
+    private void getData(String data, DataOutputStream dataOutputStream, DataInputStream dataInputStream, Stop stop) {
+        try {
+            if (data == null) return;
+            ClientRequest.Request request = RequestSearch.getRequest(data);
+            if (request.equals(ClientRequest.Request.CD)
+                    || request.equals(ClientRequest.Request.DWN)
+                    || request.equals(ClientRequest.Request.UPLOAD)
+                    || request.equals(ClientRequest.Request.DEL)) {
+                root.checkRootFromData(request, data);
+            }
 
-        if (request.equals(ClientRequest.Request.CD)
-                || request.equals(ClientRequest.Request.DWN)
-                || request.equals(ClientRequest.Request.DEL)) {
-            root.checkRootFromData(request, data);
-        }
-
-        switch (request) {
-            case LL:
-                CommandsWork fileList = commandsFactory.getCommand(Commands.FILELIST);
-                fileList.execute(root, dataOutputStream);
-                break;
-            case TREE:
-                CommandsWork tree = commandsFactory.getCommand(Commands.TREE);
-                tree.execute(root, dataOutputStream);
-                break;
-            case CD:
-                System.out.println("CD");
-                CommandsWork moveTo = commandsFactory.getCommand(Commands.MOVETO);
-                moveTo.execute(root, dataOutputStream);
-                break;
-            case BACK:
-                CommandsWork moveBack = commandsFactory.getCommand(Commands.BACKTO);
-                moveBack.execute(root, dataOutputStream);
-                break;
-            case DWN:
-                CommandsWork download = commandsFactory.getCommand(Commands.DOWNLOAD);
-                download.execute(root, dataOutputStream);
-                break;
-            case UPLOAD:
-                CommandsWork upload = commandsFactory.getCommand(Commands.SAVE);
-                upload.execute(root, dataOutputStream);
-                break;
-            case DEL:
-                CommandsWork delete = commandsFactory.getCommand(Commands.DELETE);
-                delete.execute(root, dataOutputStream);
-                break;
-            case STOP:
-                stop.stop();
-                break;
+            switch (request) {
+                case LL:
+                    CommandsWork fileList = commandsFactory.getCommand(Commands.FILELIST);
+                    fileList.execute(root, dataOutputStream);
+                    break;
+                case TREE:
+                    CommandsWork tree = commandsFactory.getCommand(Commands.TREE);
+                    tree.execute(root, dataOutputStream);
+                    break;
+                case CD:
+                    CommandsWork moveTo = commandsFactory.getCommand(Commands.MOVETO);
+                    moveTo.execute(root, dataOutputStream);
+                    break;
+                case BACK:
+                    CommandsWork moveBack = commandsFactory.getCommand(Commands.BACKTO);
+                    moveBack.execute(root, dataOutputStream);
+                    break;
+                case DWN:
+                    CommandsWork download = commandsFactory.getCommand(Commands.DOWNLOAD);
+                    download.execute(root, dataOutputStream);
+                    break;
+                case UPLOAD:
+                    int size = dataInputStream.readInt();
+                    byte[] bytes = new byte[size];
+                    dataInputStream.read(bytes, 0, bytes.length);
+                    File file = new File(root.getFromClient());
+                    if (file.getUsableSpace() > size) {
+                        file.createNewFile();
+                        FileOutputStream fileOutputStream = new FileOutputStream(file);
+                        fileOutputStream.write(bytes, 0, bytes.length);
+                        fileOutputStream.close();
+                        CommandsWork upload = commandsFactory.getCommand(Commands.UPLOAD);
+                        upload.execute(root, dataOutputStream);
+                    } else {
+                        dataOutputStream.writeUTF("No empty space. File was not uploaded.");
+                        dataOutputStream.flush();
+                    }
+                    break;
+                case DEL:
+                    CommandsWork delete = commandsFactory.getCommand(Commands.DELETE);
+                    delete.execute(root, dataOutputStream);
+                    break;
+                case STOP:
+                    stop.stop();
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

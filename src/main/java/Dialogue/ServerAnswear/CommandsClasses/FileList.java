@@ -3,18 +3,14 @@ package Dialogue.ServerAnswear.CommandsClasses;
 import Dialogue.Root;
 import Dialogue.ServerAnswear.CommandsWork;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 public class FileList implements CommandsWork {
 
     @Override
     public void execute(Root root, DataOutputStream dataOutputStream) {
-        System.out.println("fileList");
         try {
             File file = new File(root.getPATH());
-            System.out.println("create");
             String[] fileNames = file.list();
             StringBuilder stringBuilder = new StringBuilder();
             for (String s : fileNames) {
