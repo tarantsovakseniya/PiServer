@@ -31,8 +31,6 @@ public class CommandsFactory {
             case DELETE:
                 toReturn = new FileDelete();
                 break;
-            case STOP:
-                break;
         }
         return toReturn;
     }

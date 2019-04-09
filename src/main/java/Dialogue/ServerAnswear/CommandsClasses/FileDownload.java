@@ -6,7 +6,6 @@ import Dialogue.ServerAnswear.CommandsWork;
 import java.io.*;
 
 public class FileDownload implements CommandsWork {
-
     @Override
     public void execute(Root root, DataOutputStream dataOutputStream) {
         try {
@@ -16,12 +15,10 @@ public class FileDownload implements CommandsWork {
                 System.out.println("file exist "+ file.getName());
                 System.out.println((int)file.length());
                 dataOutputStream.writeInt((int)file.length());
-//                dataOutputStream.flush();
                 byte[] bytes = new byte[(int) file.length()];
                 BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file.getPath()));
                 bis.read(bytes, 0, bytes.length);
                 dataOutputStream.write(bytes, 0, bytes.length);
-//                dataOutputStream.flush();
                 dataOutputStream.writeUTF("File was downloaded." + "\n"+ root.getPATH()+root.getTail());
                 bis.close();
                 dataOutputStream.flush();

@@ -31,6 +31,10 @@ public class PIServer extends Thread {
         this.stop = stop;
     }
 
+    public Stop getStop() {
+        return stop;
+    }
+
     public void setRoot(Root root) {
         this.root = root;
     }
@@ -53,32 +57,28 @@ public class PIServer extends Thread {
                             try {
                                 String data = "";
                                 data = dataInputStream.readUTF();
-                                if (data.equals("end") || data.equals("stop")) break;
-                                getData(data, dataOutputStream, dataInputStream, () -> socket.close());
+                                getData(data, dataOutputStream, dataInputStream,() -> socket.close());
                             } catch (SocketException exception) {
                                 exception.getMessage();
                             }
                         }
                     } catch (IOException e) {
-                        try {
-                            socket.close();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
+                        try {socket.close();}
+                        catch (IOException ex) {ex.printStackTrace();}
                         e.printStackTrace();
                     }
-                    System.out.println("Client disconnected.");
                 });
                 thread.setDaemon(true);
                 thread.start();
+            } catch (SocketException e){
+                e.getCause();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println("Finish");
     }
 
-    private void getData(String data, DataOutputStream dataOutputStream, DataInputStream dataInputStream, Stop stop) {
+    private void getData(String data, DataOutputStream dataOutputStream, DataInputStream dataInputStream,Stop stopClient) {
         try {
             if (data == null) return;
             ClientRequest.Request request = RequestSearch.getRequest(data);
@@ -115,7 +115,7 @@ public class PIServer extends Thread {
                     byte[] bytes = new byte[size];
                     dataInputStream.read(bytes, 0, bytes.length);
                     File file = new File(root.getFromClient());
-                    if (file.getUsableSpace() > size) {
+                    if (file.getUsableSpace() >= size) {
                         file.createNewFile();
                         FileOutputStream fileOutputStream = new FileOutputStream(file);
                         fileOutputStream.write(bytes, 0, bytes.length);
@@ -132,7 +132,11 @@ public class PIServer extends Thread {
                     delete.execute(root, dataOutputStream);
                     break;
                 case STOP:
-                    stop.stop();
+                    stopClient.stop();
+                    System.out.println("Client disconnected.");
+                    break;
+                case FINISH:
+                    getStop().stop();
                     break;
             }
         } catch (IOException e) {

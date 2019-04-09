@@ -12,7 +12,8 @@ public interface ClientRequest {
         DWN(Pattern.compile("\\bdwn \\b")),
         UPLOAD(Pattern.compile("\\bupload \\b")),
         DEL(Pattern.compile("\\bdell \\b")),
-        STOP(Pattern.compile("\\bstop \\b"));
+        STOP(Pattern.compile("\\bstop \\b")),
+        FINISH(Pattern.compile("\\bfinish \\b"));
 
         private Pattern p;
 

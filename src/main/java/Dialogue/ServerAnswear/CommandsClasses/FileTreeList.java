@@ -6,7 +6,6 @@ import Dialogue.ServerAnswear.CommandsWork;
 import java.io.*;
 
 public class FileTreeList implements CommandsWork {
-
     @Override
     public void execute(Root root, DataOutputStream dataOutputStream) {
         try {
@@ -15,7 +14,7 @@ public class FileTreeList implements CommandsWork {
             File[] tree = file.listFiles();
             stringBuilder.append(file.getPath()+"\n");
             buildTree(tree, "|-", stringBuilder);
-            stringBuilder.append(file.getPath() + "$");
+            stringBuilder.append(file.getPath() + root.getTail());
             dataOutputStream.writeUTF(stringBuilder.toString());
             dataOutputStream.flush();
         } catch (IOException e) {

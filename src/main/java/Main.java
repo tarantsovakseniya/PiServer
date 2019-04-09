@@ -15,6 +15,5 @@ public class Main {
             System.exit(0);
         });
         piServer.start();
-        piServer.setRoot(root);
     }
 }

@@ -12,6 +12,7 @@ public class RequestSearch {
         if(Pattern.compile("\\btree\\b").matcher(pattern).find()) return ClientRequest.Request.TREE;
         if(Pattern.compile("\\bdell\\b").matcher(pattern).find()) return ClientRequest.Request.DEL;
         if(Pattern.compile("\\bstop\\b").matcher(pattern).find()) return ClientRequest.Request.STOP;
+        if(Pattern.compile("\\bfinish\\b").matcher(pattern).find()) return ClientRequest.Request.FINISH;
         return null;
     }
 }
