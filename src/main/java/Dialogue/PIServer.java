@@ -57,20 +57,24 @@ public class PIServer extends Thread {
                             try {
                                 String data = "";
                                 data = dataInputStream.readUTF();
-                                getData(data, dataOutputStream, dataInputStream,() -> socket.close());
+                                System.out.println("data: "+data);
+                                getData(data, dataOutputStream, dataInputStream, () -> socket.close());
                             } catch (SocketException exception) {
                                 exception.getMessage();
                             }
                         }
                     } catch (IOException e) {
-                        try {socket.close();}
-                        catch (IOException ex) {ex.printStackTrace();}
+                        try {
+                            socket.close();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
                         e.printStackTrace();
                     }
                 });
                 thread.setDaemon(true);
                 thread.start();
-            } catch (SocketException e){
+            } catch (SocketException e) {
                 e.getCause();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -78,9 +82,9 @@ public class PIServer extends Thread {
         }
     }
 
-    private void getData(String data, DataOutputStream dataOutputStream, DataInputStream dataInputStream,Stop stopClient) {
+    private void getData(String data, DataOutputStream dataOutputStream, DataInputStream dataInputStream, Stop stopClient) {
         try {
-            if (data == null) return;
+            if (data == null) dataOutputStream.writeUTF(root.getPATH()+root.getTail());
             ClientRequest.Request request = RequestSearch.getRequest(data);
             if (request.equals(ClientRequest.Request.CD)
                     || request.equals(ClientRequest.Request.DWN)
@@ -138,6 +142,9 @@ public class PIServer extends Thread {
                 case FINISH:
                     getStop().stop();
                     break;
+                case WRONG:
+                    dataOutputStream.writeUTF(root.getPATH()+root.getTail());
+                    dataOutputStream.flush();
             }
         } catch (IOException e) {
             e.printStackTrace();

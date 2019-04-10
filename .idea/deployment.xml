@@ -5,7 +5,7 @@
       <paths name="pi">
         <serverdata>
           <mappings>
-            <mapping deploy="/Documents/PiProjects/Java12/TarantsovaKseniya" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/Documents/PiProjects/Java12/TarantsovaKseniya/Server" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

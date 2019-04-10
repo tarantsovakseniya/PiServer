@@ -14,7 +14,8 @@ public interface ClientRequest {
         UPLOAD(Pattern.compile("\\bupload \\b")),
         DEL(Pattern.compile("\\bdell \\b")),
         STOP(Pattern.compile("\\bstop \\b")),
-        FINISH(Pattern.compile("\\bfinish \\b"));
+        FINISH(Pattern.compile("\\bfinish \\b")),
+        WRONG (Pattern.compile("."));
 
         private Pattern p;
 
