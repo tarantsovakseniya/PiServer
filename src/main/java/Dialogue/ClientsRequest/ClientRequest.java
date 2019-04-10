@@ -3,7 +3,8 @@ package Dialogue.ClientsRequest;
 import java.util.regex.Pattern;
 
 public interface ClientRequest {
-    public enum Request{
+
+    enum Request{
         //templates
         LL(Pattern.compile("\\bll \\b")),
         TREE(Pattern.compile("\\tree \\b")),

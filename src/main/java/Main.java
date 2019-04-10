@@ -7,7 +7,7 @@ public class Main {
 
         Root root = new Root(args[0]);
         System.out.println(args[0]);
-        PIServer piServer = new PIServer(8777);
+        PIServer piServer = new PIServer(36007);
         piServer.setRoot(root);
         piServer.setStop(()->{
             piServer.setAlive(false);
