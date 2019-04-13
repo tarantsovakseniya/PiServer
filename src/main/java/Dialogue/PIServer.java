@@ -55,9 +55,9 @@ public class PIServer extends Thread {
                         dataOutputStream.flush();
                         while (true) {
                             try {
-                                String data = "";
+                                String data = "";//вынести за цикл
                                 data = dataInputStream.readUTF();
-                                System.out.println("data: "+data);
+                                System.out.println("data: " + data);
                                 getData(data, dataOutputStream, dataInputStream, () -> socket.close());
                             } catch (SocketException exception) {
                                 exception.getMessage();
@@ -84,7 +84,7 @@ public class PIServer extends Thread {
 
     private void getData(String data, DataOutputStream dataOutputStream, DataInputStream dataInputStream, Stop stopClient) {
         try {
-            if (data == null) dataOutputStream.writeUTF(root.getPATH()+root.getTail());
+            if (data == null) dataOutputStream.writeUTF(root.getPATH() + root.getTail());
             ClientRequest.Request request = RequestSearch.getRequest(data);
             if (request.equals(ClientRequest.Request.CD)
                     || request.equals(ClientRequest.Request.DWN)
@@ -143,7 +143,7 @@ public class PIServer extends Thread {
                     getStop().stop();
                     break;
                 case WRONG:
-                    dataOutputStream.writeUTF(root.getPATH()+root.getTail());
+                    dataOutputStream.writeUTF(root.getPATH() + root.getTail());
                     dataOutputStream.flush();
             }
         } catch (IOException e) {
